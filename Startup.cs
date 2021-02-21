@@ -19,7 +19,7 @@ namespace FatecMauaJobNewsletter
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            StartupConfig.ConfigureDatabaseConnectiton(services, Configuration);
+            StartupConfig.ConfigureServices(services, Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -39,6 +39,8 @@ namespace FatecMauaJobNewsletter
             {
                 endpoints.MapControllers();
             });
+
+            StartupConfig.ConfigureSwagger(app);
         }
     }
 }
