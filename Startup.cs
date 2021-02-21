@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Mapster;
 
 namespace FatecMauaJobNewsletter
 {
@@ -22,6 +23,7 @@ namespace FatecMauaJobNewsletter
         {
             services.AddControllers();
             StartupConfig.ConfigureServices(services, Configuration);
+            TypeAdapterConfig.GlobalSettings.Default.PreserveReference(true);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
