@@ -20,6 +20,10 @@ namespace FatecMauaJobNewsletter.Domains.Contexts
                                         .Property(p => p.Salary)
                                         .HasColumnType("decimal(18,2)");
 
+            modelBuilder.Entity<User>()
+                                    .HasIndex(x => x.Login)
+                                    .IsUnique();
+
             base.OnModelCreating(modelBuilder);
         }
 
@@ -30,5 +34,7 @@ namespace FatecMauaJobNewsletter.Domains.Contexts
         }
 
         DbSet<JobVacancy> JobVacancies { get; set; }
+
+        DbSet<User> Users { get; set; }
     }
 }
