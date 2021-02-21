@@ -71,8 +71,8 @@ namespace FatecMauaJobNewsletter.Domains.Utils
 
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "LoginService API",
-                    Description = "Api to control login users and authenticate on other services",
+                    Title = "FatecMauaJobNewsletter API",
+                    Description = "Api to control and populate the website FatecMauaJobNewsletter",
                     Contact = new OpenApiContact
                     {
                         Name = "Lucas V Vicente",
@@ -90,7 +90,11 @@ namespace FatecMauaJobNewsletter.Domains.Utils
 
         private static void AddAuthentication(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
             .AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -103,6 +107,7 @@ namespace FatecMauaJobNewsletter.Domains.Utils
                     ValidAudience = configuration["Jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
                 };
+
             });
         }
     }

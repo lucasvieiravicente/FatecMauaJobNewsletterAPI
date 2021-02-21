@@ -12,9 +12,11 @@ namespace FatecMauaJobNewsletter
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            StaticConfiguration = configuration;
         }
 
         public IConfiguration Configuration { get; }
+        public static IConfiguration StaticConfiguration { get; private set; }
 
         public void ConfigureServices(IServiceCollection services)
         {

@@ -1,24 +1,35 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
+﻿using FatecMauaJobNewsletter.Domains.Claims;
+using FatecMauaJobNewsletter.Domains.Models;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace FatecMauaJobNewsletter.Domains.Utils
 {
-    public class TokenUtil
+    public static class TokenUtil
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        public TokenUtil(IHttpContextAccessor httpContextAccessor)
+        public static string GenerateTokenJWT(User userRegister)
         {
-            _httpContextAccessor = httpContextAccessor;
-        }
+            var config = Startup.StaticConfiguration;
 
-        public void DecodeTokenJWT()
-        {
-            _httpContextAccessor.HttpContext.Request.Headers.TryGetValue("Authorization", out StringValues vs);
+            string issuer = config["Jwt:Issuer"];
+            string audience = config["Jwt:Audience"];
+            DateTime expires = DateTime.Now.AddMinutes(120);
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            List<Claim> claims = new List<Claim>();
 
-            var handler = new JwtSecurityTokenHandler();
-            var jsonToken = handler.ReadToken(vs);
-            var tokenS = handler.ReadToken(vs) as JwtSecurityToken;
+            if (userRegister.UserType.Equals(UserType.Administration))
+                claims.Add(new Claim("UserType", UserClaim.Administration));
+            else
+                claims.Add(new Claim("UserType", UserClaim.Student));
+
+            var token = new JwtSecurityToken(issuer, audience, claims, null, expires, credentials);
+            var tokenHandler = new JwtSecurityTokenHandler();
+            return tokenHandler.WriteToken(token);            
         }
     }
 }
