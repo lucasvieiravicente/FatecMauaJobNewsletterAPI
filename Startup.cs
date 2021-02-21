@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Mapster;
+using FatecMauaJobNewsletter.Domains.DIs;
 
 namespace FatecMauaJobNewsletter
 {
@@ -23,6 +24,7 @@ namespace FatecMauaJobNewsletter
         {
             services.AddControllers();
             StartupConfig.ConfigureServices(services, Configuration);
+            InjectionService.InjectDependencies(services);
             TypeAdapterConfig.GlobalSettings.Default.PreserveReference(true);
         }
 
