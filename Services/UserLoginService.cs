@@ -11,6 +11,7 @@ namespace FatecMauaJobNewsletter.Services
     public class UserLoginService : IUserLoginService
     {
         private readonly IUserRepository _userRepository;
+        private readonly TypeAdapterConfig _mapConfig = ConfigMapster.Configs();
 
         public UserLoginService(IUserRepository userRepository)
         {
@@ -29,14 +30,14 @@ namespace FatecMauaJobNewsletter.Services
 
         public async Task RegisterUser(SignUpRequest request)
         {
-            var user = request.Adapt<User>();
+            User user = request.Adapt<User>(_mapConfig);
             user.UserType = UserType.Student;
             await _userRepository.InsertAsync(user);
         }
 
         public async Task RegisterAdministrationUser(SignUpRequest request)
         {
-            var user = request.Adapt<User>();
+            var user = request.Adapt<User>(_mapConfig);
             user.UserType = UserType.Administration;
             await _userRepository.InsertAsync(user);
         }
