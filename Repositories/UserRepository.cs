@@ -1,13 +1,14 @@
 ﻿using FatecMauaJobNewsletter.Domains.Contexts;
 using FatecMauaJobNewsletter.Domains.Models;
 using FatecMauaJobNewsletter.Repositories.Interfaces;
+using Microsoft.AspNetCore.Http;
 using System.Linq;
 
 namespace FatecMauaJobNewsletter.Repositories
 {
     public class UserRepository : Repository<User>, IUserRepository
     {
-        public UserRepository(DBContext context) : base(context)
+        public UserRepository(DBContext context, IHttpContextAccessor httpContextAccessor) : base(context, httpContextAccessor)
         {
         }
 
