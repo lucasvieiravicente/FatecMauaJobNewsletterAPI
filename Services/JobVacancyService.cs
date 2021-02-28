@@ -39,6 +39,5 @@ namespace FatecMauaJobNewsletter.Services
         {
             return _repository.FindById(id);
         }
-
     }
 }
