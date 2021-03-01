@@ -4,6 +4,7 @@ using FatecMauaJobNewsletter.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Threading.Tasks;
 
 namespace FatecMauaJobNewsletter.Controllers
 {
@@ -32,11 +33,12 @@ namespace FatecMauaJobNewsletter.Controllers
 
         [AllowAnonymous]
         [HttpPost("SignUp")]
-        public ActionResult SignUp(SignUpRequest request)
+        public async Task<ActionResult> SignUp(SignUpRequest request)
         {
             try
             {
-                return Ok(_userLoginService.RegisterUser(request));
+                await _userLoginService.RegisterUser(request);
+                return Ok(request);
             }
             catch(Exception e)
             {
@@ -46,11 +48,12 @@ namespace FatecMauaJobNewsletter.Controllers
 
         [HttpPost("SignUpAdministration")]
         [Authorize(UserClaim.Administration)]
-        public ActionResult SignUpAdministration(SignUpRequest request)
+        public async Task<ActionResult> SignUpAdministration(SignUpRequest request)
         {
             try
             {
-                return Ok(_userLoginService.RegisterAdministrationUser(request));
+                await _userLoginService.RegisterAdministrationUser(request);
+                return Ok(request);
             }
             catch (Exception e)
             {
