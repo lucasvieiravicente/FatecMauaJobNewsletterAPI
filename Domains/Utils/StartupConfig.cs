@@ -25,7 +25,7 @@ namespace FatecMauaJobNewsletter.Domains.Utils
 
         public static void ConfigureSwagger(IApplicationBuilder app)
         {
-            app.UseSwagger();
+            app.UseSwagger(x => x.SerializeAsV2 = true);
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "LoginService API v1");
@@ -55,7 +55,7 @@ namespace FatecMauaJobNewsletter.Domains.Utils
                     Name = "Authorization",
                     Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
                     In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey
+                    Type = SecuritySchemeType.ApiKey,
                 });
 
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -73,7 +73,6 @@ namespace FatecMauaJobNewsletter.Domains.Utils
                 {
                     Title = "FatecMauaJobNewsletter API",
                     Description = "Api to control and populate the website FatecMauaJobNewsletter",
-                    Version = "2.0",
                     Contact = new OpenApiContact
                     {
                         Name = "Lucas V Vicente",
