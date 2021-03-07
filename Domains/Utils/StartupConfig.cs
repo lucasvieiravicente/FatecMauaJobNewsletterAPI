@@ -73,6 +73,7 @@ namespace FatecMauaJobNewsletter.Domains.Utils
                 {
                     Title = "FatecMauaJobNewsletter API",
                     Description = "Api to control and populate the website FatecMauaJobNewsletter",
+                    Version = "2.0",
                     Contact = new OpenApiContact
                     {
                         Name = "Lucas V Vicente",
