@@ -1,19 +1,34 @@
 ﻿using FatecMauaJobNewsletter.Domains.Models;
-using FatecMauaJobNewsletter.Domains.Models.Request;
+using FatecMauaJobNewsletter.Models.Pagination;
+using FatecMauaJobNewsletter.Models.Request;
+using FatecMauaJobNewsletter.Models.Response;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace FatecMauaJobNewsletter.Services.Interfaces
 {
     public interface IJobVacancyService
     {
-        Task RegisterJob(JobVacancyRegisterRequest request);
+        Task InsertJob(JobVacancyRequest request);
 
-        Task UpdateJob(JobVacancyRegisterRequest request);
+        Task UpdateJob(JobVacancyRequest request, Guid jobId);
 
-        IEnumerable<JobVacancy> GetAllActive();
+        Task RemoveJob(Guid jobId);
 
-        JobVacancy FindById(Guid id);
+        Task HardRemoveJob(Guid jobId);
+
+        PaginationResponse<JobResume> GetPaginatedJobResumesPending(PaginationRequest request);
+
+        PaginationResponse<JobVacancy> GetPaginatedJobResumesAproved(PaginationRequest request);
+
+        PaginationResponse<JobVacancy> GetPaginatedUserJobResumesAproved(PaginationRequest request);
+
+        PaginationResponse<JobVacancy> GetPaginatedUserJobResumesReproved(PaginationRequest request);
+
+        Task AproveJob(JobManagement request);
+
+        Task ReproveJob(JobManagement request);
+
+        Task<JobVacancy> FindJobById(Guid jobId);
     }
 }

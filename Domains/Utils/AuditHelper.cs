@@ -1,42 +1,39 @@
 ﻿using FatecMauaJobNewsletter.Domains.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 
 namespace FatecMauaJobNewsletter.Domains.Utils
 {
-    public static class AuditHelper<T> where T : BaseEntity
+    public static class AuditHelper
     {
-        public static void UpdateAuditInfo(T model, string userLogin)
+        private const string System = "SYSTEM";
+
+        public static void UpdateAuditInfo<T>(T entity, EntityState entityState, string user = null) where T : BaseEntity
         {
-            DateTime date = DateTime.Now;
-            string user = userLogin ?? "SYSTEM";
+            var date = DateTime.Now;
+            user ??= System;
 
-            if (model.CreatedAt == DateTime.MinValue)
-                model.CreatedAt = date;
+            if (entityState == EntityState.Added)
+            {
+                entity.FlagActive = true;
+                entity.CreatedAt = date;
+                entity.CreatedBy = user;
+            }
+                
+            if(entityState == EntityState.Deleted)
+            {
+                entity.FlagActive = false;
+            }
 
-            if (string.IsNullOrEmpty(model.CreatedBy))
-                model.CreatedBy = user;
-
-            model.ModifiedAt = date;
-            model.ModifiedBy = user;
+            entity.ModifiedAt = date;
+            entity.ModifiedBy = user;
         }
 
-        public static void UpdateAuditInfo(IEnumerable<T> models, string userLogin)
+        public static void UpdateAuditInfo<T>(IEnumerable<T> entities, EntityState entityState, string user = null) where T : BaseEntity
         {
-            DateTime date = DateTime.Now;
-            string user = userLogin ?? "SYSTEM";
-
-            foreach(var model in models)
-            {
-                if (model.CreatedAt == DateTime.MinValue)
-                    model.CreatedAt = date;
-
-                if (string.IsNullOrEmpty(model.CreatedBy))
-                    model.CreatedBy = user;
-
-                model.ModifiedAt = date;
-                model.ModifiedBy = user;
-            }
+            foreach (var entity in entities)
+                UpdateAuditInfo(entity, entityState, user);
         }
     }
 }

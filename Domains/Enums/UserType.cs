@@ -1,4 +1,4 @@
-﻿namespace FatecMauaJobNewsletter.Domains
+﻿namespace FatecMauaJobNewsletter.Domains.Enums
 {
     public enum UserType
     {

@@ -1,18 +1,14 @@
-﻿using FatecMauaJobNewsletter.Domains.Models;
+﻿using FatecMauaJobNewsletter.Contexts.Interfaces;
+using FatecMauaJobNewsletter.Domains.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace FatecMauaJobNewsletter.Domains.Contexts.Interfaces
 {
-    public interface IRepository<T> where T : BaseEntity
+    public interface IRepository<T> : ICustomSearch<T> where T : BaseEntity
     {
-        IQueryable<T> Query();
-
         IEnumerable<T> GetAll();
-
-        IEnumerable<T> GetAllActive();
 
         T FindById(Guid id);
 

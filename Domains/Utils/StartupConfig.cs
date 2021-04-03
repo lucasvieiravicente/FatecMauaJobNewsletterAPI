@@ -1,23 +1,21 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using FatecMauaJobNewsletter.Domains.Contexts;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using FatecMauaJobNewsletter.Domains.Claims;
-using Microsoft.OpenApi.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using FatecMauaJobNewsletter.Domains.Contexts;
 
 namespace FatecMauaJobNewsletter.Domains.Utils
 {
     public static class StartupConfig
     {
-        public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+        public static void ConfigureServices(this IServiceCollection services, IConfiguration configuration)
         {
-            AddAuthorization(services);
             AddSwaggerGenInfo(services);
             AddAuthentication(services, configuration);
             ConfigureDatabaseConnectiton(services, configuration);
@@ -25,7 +23,7 @@ namespace FatecMauaJobNewsletter.Domains.Utils
 
         public static void ConfigureSwagger(IApplicationBuilder app)
         {
-            app.UseSwagger(x => x.SerializeAsV2 = true);
+            app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "LoginService API v1");
@@ -37,15 +35,6 @@ namespace FatecMauaJobNewsletter.Domains.Utils
             services.AddDbContext<DBContext>(x => x.UseSqlServer(configuration.GetConnectionString("Database")));
         }
 
-        private static void AddAuthorization(IServiceCollection services)
-        {
-            services.AddAuthorization(a =>
-            {
-                a.AddPolicy(UserClaim.Administration, x => x.RequireClaim("UserType", UserClaim.Administration));
-                a.AddPolicy(UserClaim.Student, x => x.RequireClaim("UserType", UserClaim.Student));
-            });
-        }
-
         private static void AddSwaggerGenInfo(IServiceCollection services)
         {
             services.AddSwaggerGen(c =>
@@ -55,7 +44,7 @@ namespace FatecMauaJobNewsletter.Domains.Utils
                     Name = "Authorization",
                     Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
                     In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
+                    Type = SecuritySchemeType.ApiKey
                 });
 
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -90,20 +79,21 @@ namespace FatecMauaJobNewsletter.Domains.Utils
 
         private static void AddAuthentication(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
             .AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"])),
+                    ValidateIssuer = true,
                     ValidIssuer = configuration["Jwt:Issuer"],
-                    ValidAudience = configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
+                    ValidateAudience = false
                 };
-
             });
         }
     }

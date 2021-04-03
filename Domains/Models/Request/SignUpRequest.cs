@@ -1,4 +1,4 @@
-﻿using FatecMauaJobNewsletter.Domains.Utils;
+﻿using FatecMauaJobNewsletter.Domains.Consts;
 using System.ComponentModel.DataAnnotations;
 
 namespace FatecMauaJobNewsletter.Domains.Models
@@ -28,6 +28,6 @@ namespace FatecMauaJobNewsletter.Domains.Models
         public string Email { get; set; }
 
         [RegularExpression("^[0-9]*$", ErrorMessage = ErrorMessages.IncorrectPhoneNumber)]
-        public string PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; }  
     }
 }

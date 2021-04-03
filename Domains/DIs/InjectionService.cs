@@ -1,17 +1,14 @@
-﻿using FatecMauaJobNewsletter.Domains.Contexts;
-using FatecMauaJobNewsletter.Domains.Contexts.Interfaces;
-using FatecMauaJobNewsletter.Repositories;
+﻿using FatecMauaJobNewsletter.Repositories;
 using FatecMauaJobNewsletter.Repositories.Interfaces;
 using FatecMauaJobNewsletter.Services;
 using FatecMauaJobNewsletter.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FatecMauaJobNewsletter.Domains.DIs
 {
-    public class InjectionService
+    public static class InjectionService
     {
-        public static void InjectDependencies(IServiceCollection services)
+        public static void InjectDependencies(this IServiceCollection services)
         {
             InjectServices(services);
             InjectRepositories(services);
@@ -19,14 +16,16 @@ namespace FatecMauaJobNewsletter.Domains.DIs
 
         private static void InjectServices(IServiceCollection services)
         {
-            services.AddScoped<IUserLoginService, UserLoginService>();
-            services.AddScoped<IJobVacancyService, JobVacancyService>();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddHttpContextAccessor();
+            services.AddTransient<IJobVacancyService, JobVacancyService>();
+            services.AddTransient<IUserLoginService, UserLoginService>();
+            services.AddTransient<ICookiesService, CookiesService>();
+            services.AddTransient<IPagesService, PagesService>();
         }
 
         private static void InjectRepositories(IServiceCollection services)
         {
-            services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
+            services.AddTransient<IJobVacancyRepository, JobVacancyRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
         }
     }

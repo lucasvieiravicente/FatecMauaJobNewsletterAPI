@@ -1,8 +1,5 @@
 ﻿using FatecMauaJobNewsletter.Domains.Contexts.Interfaces;
 using FatecMauaJobNewsletter.Domains.Models;
-using FatecMauaJobNewsletter.Domains.Utils;
-using FatecMauaJobNewsletter.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -11,27 +8,17 @@ using System.Threading.Tasks;
 
 namespace FatecMauaJobNewsletter.Domains.Contexts
 {
-    public class Repository<T> : BaseService, IRepository<T> where T : BaseEntity
+    public class Repository<T> : EFCustomSearch<T>, IRepository<T> where T : BaseEntity
     {
         private readonly DBContext _context;
-        public Repository(DBContext context, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
+        public Repository(DBContext context) : base (context)
         {
             _context = context;
-        }
-
-        public IQueryable<T> Query()
-        {
-            return _context.Set<T>().AsQueryable();
         }
 
         public IEnumerable<T> GetAll()
         {
             return _context.Set<T>();
-        }
-
-        public IEnumerable<T> GetAllActive()
-        {
-            return Query().Where(x => x.FlagActive);
         }
 
         public T FindById(Guid id)
@@ -79,7 +66,6 @@ namespace FatecMauaJobNewsletter.Domains.Contexts
             if (models is null || !models.Any())
                 return;
 
-            AuditHelper<T>.UpdateAuditInfo(models, GetUser());
             _context.ChangeTracker.AutoDetectChangesEnabled = autoDetect;
 
             foreach(var model in models)
@@ -95,7 +81,6 @@ namespace FatecMauaJobNewsletter.Domains.Contexts
 
             _context.ChangeTracker.AutoDetectChangesEnabled = autoDetect;
 
-            AuditHelper<T>.UpdateAuditInfo(model, GetUser());
             Set(model, state);
 
             await _context.SaveChangesAsync();

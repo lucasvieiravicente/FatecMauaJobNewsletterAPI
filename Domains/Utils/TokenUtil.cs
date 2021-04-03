@@ -1,8 +1,8 @@
 ﻿using FatecMauaJobNewsletter.Domains.Claims;
+using FatecMauaJobNewsletter.Domains.Enums;
 using FatecMauaJobNewsletter.Domains.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -11,37 +11,33 @@ namespace FatecMauaJobNewsletter.Domains.Utils
 {
     public static class TokenUtil
     {
-        public static string GenerateTokenJWT(User userRegister)
+        public static string GenerateTokenJWT(User userRegister, IConfiguration configuration)
         {
-            var config = Startup.StaticConfiguration;
+            Claim roleClaim;
 
-            string issuer = config["Jwt:Issuer"];
-            string audience = config["Jwt:Audience"];
-            DateTime expires = DateTime.Now.AddMinutes(120);
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            List<Claim> claims = GetUserClaims(userRegister);
-
-            var token = new JwtSecurityToken(issuer, audience, claims, null, expires, credentials);
-            var tokenHandler = new JwtSecurityTokenHandler();
-            return tokenHandler.WriteToken(token);            
-        }
-
-        private static List<Claim> GetUserClaims(User user)
-        {
-            string userClaim;
-            if (user.UserType.Equals(UserType.Administration))
-                userClaim = UserClaim.Administration;
+            if (userRegister.UserType.Equals(UserType.Administration))
+                roleClaim = new Claim(ClaimTypes.Role, UserClaim.Administration);
             else
-                userClaim = UserClaim.Student;
+                roleClaim = new Claim(ClaimTypes.Role, UserClaim.Student);
 
-            return new List<Claim>
+            var securitykey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
+            var credentials = new SigningCredentials(securitykey, SecurityAlgorithms.HmacSha256Signature);
+            var tokenDescriptor = new SecurityTokenDescriptor
             {
-                new Claim(ClaimType.Email, user.Email),
-                new Claim(ClaimType.Login, user.Login),
-                new Claim(ClaimType.UserType, userClaim)
+                SigningCredentials = credentials,
+                Issuer = configuration["Jwt:Issuer"],
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Email, userRegister.Email),
+                    new Claim(ClaimTypes.Name, userRegister.Name),
+                    new Claim(ClaimTypes.NameIdentifier, userRegister.Login),
+                    roleClaim
+                })
             };
+
+            var tokenhandler = new JwtSecurityTokenHandler();
+            var token = tokenhandler.CreateToken(tokenDescriptor);
+            return tokenhandler.WriteToken(token);
         }
     }
 }

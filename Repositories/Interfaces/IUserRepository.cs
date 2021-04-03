@@ -5,6 +5,8 @@ namespace FatecMauaJobNewsletter.Repositories.Interfaces
 {
     public interface IUserRepository : IRepository<User>
     {
-        User FindByLogin(string login, byte[] password);
+        User FindByLoginAndPassword(string login, byte[] password);
+
+        User FindByLogin(string login);
     }
 }

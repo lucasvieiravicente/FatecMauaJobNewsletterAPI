@@ -2,11 +2,6 @@
 {
     public class LoginResponse
     {
-        public LoginResponse(string jwtResponse)
-        {
-            JwtResponse = jwtResponse;
-        }
-
-        public string JwtResponse { get; set; }
+        public bool IsAdmin { get; set; }
     }
 }

@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Mapster;
 using FatecMauaJobNewsletter.Domains.DIs;
+using FatecMauaJobNewsletter.Domains.Claims;
+using System.Security.Claims;
 
 namespace FatecMauaJobNewsletter
 {
@@ -14,17 +16,16 @@ namespace FatecMauaJobNewsletter
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            StaticConfiguration = configuration;
         }
 
         public IConfiguration Configuration { get; }
-        public static IConfiguration StaticConfiguration { get; private set; }
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.InjectDependencies();
+            services.ConfigureServices(Configuration);
+            AddServiceAuthorization(services);
             services.AddControllers();
-            StartupConfig.ConfigureServices(services, Configuration);
-            InjectionService.InjectDependencies(services);
             TypeAdapterConfig.GlobalSettings.Default.PreserveReference(true);
         }
 
@@ -49,6 +50,17 @@ namespace FatecMauaJobNewsletter
             });
 
             StartupConfig.ConfigureSwagger(app);
+        }
+
+        private void AddServiceAuthorization(IServiceCollection services)
+        {
+            services.AddAuthorization(a =>
+            {
+                a.AddPolicy(UserClaim.Administration, x => x.RequireClaim(ClaimTypes.Role, UserClaim.Administration));
+                a.AddPolicy(UserClaim.Student, x => x.RequireClaim(ClaimTypes.Role, UserClaim.Student));
+                a.AddPolicy(UserClaim.AtLeastAuthenticated, x => x.RequireAssertion(x => x.User.HasClaim(x => x.Value == UserClaim.Student) ||
+                                                                                         x.User.HasClaim(x => x.Value == UserClaim.Administration)));
+            });
         }
     }
 }

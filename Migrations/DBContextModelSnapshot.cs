@@ -16,7 +16,7 @@ namespace FatecMauaJobNewsletter.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.3")
+                .HasAnnotation("ProductVersion", "5.0.4")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("FatecMauaJobNewsletter.Domains.Models.JobVacancy", b =>
@@ -28,6 +28,12 @@ namespace FatecMauaJobNewsletter.Migrations
                     b.Property<string>("Address")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("AdministrationDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("AdministrationStep")
+                        .HasColumnType("int");
 
                     b.Property<string>("City")
                         .HasMaxLength(200)
@@ -55,7 +61,6 @@ namespace FatecMauaJobNewsletter.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("JobDescription")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
@@ -74,7 +79,14 @@ namespace FatecMauaJobNewsletter.Migrations
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PhoneNumber")
+                    b.Property<string>("Neighborhood")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("ResponsibleEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResponsiblePhoneNumber")
                         .HasMaxLength(11)
                         .HasColumnType("nvarchar(11)");
 
@@ -88,9 +100,13 @@ namespace FatecMauaJobNewsletter.Migrations
                         .HasMaxLength(2)
                         .HasColumnType("nvarchar(2)");
 
+                    b.Property<string>("UserCreated")
+                        .HasMaxLength(26)
+                        .HasColumnType("nvarchar(26)");
+
                     b.Property<string>("ZipCode")
-                        .HasMaxLength(8)
-                        .HasColumnType("nvarchar(8)");
+                        .HasMaxLength(9)
+                        .HasColumnType("nvarchar(9)");
 
                     b.HasKey("Id");
 

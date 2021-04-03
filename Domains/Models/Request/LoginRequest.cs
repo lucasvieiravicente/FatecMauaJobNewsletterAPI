@@ -1,4 +1,4 @@
-﻿using FatecMauaJobNewsletter.Domains.Utils;
+﻿using FatecMauaJobNewsletter.Domains.Consts;
 using System.ComponentModel.DataAnnotations;
 
 namespace FatecMauaJobNewsletter.Domains.Models

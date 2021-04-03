@@ -1,4 +1,4 @@
-﻿namespace FatecMauaJobNewsletter.Domains.Utils
+﻿namespace FatecMauaJobNewsletter.Domains.Consts
 {
     public static class ErrorMessages
     {
