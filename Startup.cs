@@ -24,7 +24,6 @@ namespace FatecMauaJobNewsletter
         {
             services.InjectDependencies();
             services.ConfigureServices(Configuration);
-            AddServiceAuthorization(services);
             services.AddControllers();
             TypeAdapterConfig.GlobalSettings.Default.PreserveReference(true);
         }
@@ -49,18 +48,7 @@ namespace FatecMauaJobNewsletter
                 endpoints.MapControllers();
             });
 
-            StartupConfig.ConfigureSwagger(app);
-        }
-
-        private void AddServiceAuthorization(IServiceCollection services)
-        {
-            services.AddAuthorization(a =>
-            {
-                a.AddPolicy(UserClaim.Administration, x => x.RequireClaim(ClaimTypes.Role, UserClaim.Administration));
-                a.AddPolicy(UserClaim.Student, x => x.RequireClaim(ClaimTypes.Role, UserClaim.Student));
-                a.AddPolicy(UserClaim.AtLeastAuthenticated, x => x.RequireAssertion(x => x.User.HasClaim(x => x.Value == UserClaim.Student) ||
-                                                                                         x.User.HasClaim(x => x.Value == UserClaim.Administration)));
-            });
+            app.ConfigureSwagger();
         }
     }
 }

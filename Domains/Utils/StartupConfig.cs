@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using FatecMauaJobNewsletter.Domains.Contexts;
+using FatecMauaJobNewsletter.Domains.Claims;
+using System.Security.Claims;
 
 namespace FatecMauaJobNewsletter.Domains.Utils
 {
@@ -18,15 +20,16 @@ namespace FatecMauaJobNewsletter.Domains.Utils
         {
             AddSwaggerGenInfo(services);
             AddAuthentication(services, configuration);
+            AddAuthorization(services);
             ConfigureDatabaseConnectiton(services, configuration);
         }
 
-        public static void ConfigureSwagger(IApplicationBuilder app)
+        public static void ConfigureSwagger(this IApplicationBuilder app)
         {
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "LoginService API v1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "FatecMauaJobNewsletter API v1");
             });
         }
 
@@ -60,7 +63,7 @@ namespace FatecMauaJobNewsletter.Domains.Utils
 
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "FatecMauaJobNewsletter API",
+                    Title = "Fatec Maua Job Newsletter API",
                     Description = "Api to control and populate the website FatecMauaJobNewsletter",
                     Contact = new OpenApiContact
                     {
@@ -71,7 +74,7 @@ namespace FatecMauaJobNewsletter.Domains.Utils
                     License = new OpenApiLicense
                     {
                         Name = "MIT License",
-                        //Url = new Uri("inserir link da license do repositorio depois")
+                        Url = new Uri("https://github.com/lucasvieiravicente/FatecMauaJobNewsletterAPI")
                     },
                 });
             });
@@ -94,6 +97,17 @@ namespace FatecMauaJobNewsletter.Domains.Utils
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidateAudience = false
                 };
+            });
+        }
+
+        private static void AddAuthorization(IServiceCollection services)
+        {
+            services.AddAuthorization(a =>
+            {
+                a.AddPolicy(UserClaim.Administration, x => x.RequireClaim(ClaimTypes.Role, UserClaim.Administration));
+                a.AddPolicy(UserClaim.Student, x => x.RequireClaim(ClaimTypes.Role, UserClaim.Student));
+                a.AddPolicy(UserClaim.AtLeastAuthenticated, x => x.RequireAssertion(x => x.User.HasClaim(x => x.Value == UserClaim.Student) ||
+                                                                                         x.User.HasClaim(x => x.Value == UserClaim.Administration)));
             });
         }
     }
