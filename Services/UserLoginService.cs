@@ -35,12 +35,11 @@ namespace FatecMauaJobNewsletter.Services
         {
             User userRegister = _userRepository.FindByLoginAndPassword(request.Login, HashUtil.HashPassword(request.Password));
 
-            if (!(userRegister is null))            
-                _cookiesService.SetLoginCookie(TokenUtil.GenerateTokenJWT(userRegister, _configuration));            
-            else
-                throw new Exception("Usuário não localizado");
+            if (userRegister is null)
+                throw new Exception("Usuário não localizado");      
 
-            var response = new LoginResponse();
+            var response = new LoginResponse(TokenUtil.GenerateTokenJWT(userRegister, _configuration));
+
             if (userRegister.UserType == UserType.Administration)
                 response.IsAdmin = true;
 

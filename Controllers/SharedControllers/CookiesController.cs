@@ -36,32 +36,5 @@ namespace FatecMauaJobNewsletter.Controllers.SharedControllers
                 return BadRequest(e.Message);
             }
         }
-
-        [HttpGet]
-        public ActionResult<string> GetJwtToken()
-        {
-            try
-            {
-                return Ok(_cookiesService.GetJwtToken());
-            }
-            catch(Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
-
-        [HttpDelete]
-        public ActionResult DeleteJwtToken()
-        {
-            try
-            {
-                _cookiesService.RemoveLoginCookie();
-                return Ok();
-            }
-            catch(Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
     }
 }
