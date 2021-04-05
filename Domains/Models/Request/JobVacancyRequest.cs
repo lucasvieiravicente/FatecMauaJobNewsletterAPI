@@ -10,7 +10,6 @@ namespace FatecMauaJobNewsletter.Models.Request
         [MaxLength(50, ErrorMessage = ErrorMessages.MaxLengthError)]
         public string JobName { get; set; }
 
-        [Required]
         [MaxLength(1000, ErrorMessage = ErrorMessages.MaxLengthError)]
         public string JobDescription { get; set; }
 
