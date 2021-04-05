@@ -6,18 +6,13 @@ using System.Security.Claims;
 
 namespace FatecMauaJobNewsletter.Services
 {
-    public class CookiesService : ICookiesService
+    public class CookiesService : BaseService, ICookiesService
     {
         private readonly IHttpContextAccessor _httpContext;
 
-        public CookiesService(IHttpContextAccessor httpContextAccessor) 
+        public CookiesService(IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _httpContext = httpContextAccessor;
-        }
-
-        public bool IsAdmin()
-        {
-            return _httpContext.HttpContext.User.Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == UserClaim.Administration);
         }
 
         public bool IsLogged()

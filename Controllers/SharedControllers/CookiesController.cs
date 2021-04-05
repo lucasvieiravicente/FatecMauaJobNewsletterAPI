@@ -1,4 +1,6 @@
-﻿using FatecMauaJobNewsletter.Models.Pages;
+﻿using FatecMauaJobNewsletter.Domains.Claims;
+using FatecMauaJobNewsletter.Domains.Models.Request;
+using FatecMauaJobNewsletter.Models.Pages;
 using FatecMauaJobNewsletter.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

@@ -1,4 +1,5 @@
 ﻿using FatecMauaJobNewsletter.Domains.Models;
+using FatecMauaJobNewsletter.Domains.Models.Request;
 using FatecMauaJobNewsletter.Models.Response;
 using Mapster;
 
@@ -12,6 +13,9 @@ namespace FatecMauaJobNewsletter.Domains.Utils
 
             config.NewConfig<SignUpRequest, User>()
                                         .Map(src => src.Password, dest => HashUtil.HashPassword(dest.Password));
+
+            config.NewConfig<User, UserUpdate>()
+                                        .Ignore(x => x.Password);
 
             config.NewConfig<JobVacancy, JobResume>();
 

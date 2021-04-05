@@ -10,6 +10,7 @@ using FatecMauaJobNewsletter.Repositories.Interfaces;
 using FatecMauaJobNewsletter.Domains.Models;
 using FatecMauaJobNewsletter.Domains.Enums;
 using FatecMauaJobNewsletter.Domains.Consts;
+using FatecMauaJobNewsletter.Domains.Models.Request;
 
 namespace FatecMauaJobNewsletter.Services
 {
@@ -17,18 +18,15 @@ namespace FatecMauaJobNewsletter.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IConfiguration _configuration;
-        private readonly ICookiesService _cookiesService;
         private readonly TypeAdapterConfig _mapConfig = ConfigMapster.Configs();
 
         public UserLoginService(
                 IUserRepository userRepository, 
                 IConfiguration configuration, 
-                ICookiesService cookiesService,
                 IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _userRepository = userRepository;
             _configuration = configuration;
-            _cookiesService = cookiesService;
         }
 
         public LoginResponse LoginRequest(LoginRequest request)
@@ -70,6 +68,43 @@ namespace FatecMauaJobNewsletter.Services
             AuditHelper.UpdateAuditInfo(user, EntityState.Added, SystemUsers.System);
             user.UserType = UserType.Administration;
             await _userRepository.InsertAsync(user);
+        }
+
+        public async Task UpdateUser(UserUpdate request)
+        {
+            User userRegistered = _userRepository.FindByLogin(GetLogin());
+
+            if (userRegistered is null)
+                throw new Exception("Usuário não localizado, contate o administrador do sistema");
+
+            SetUserInfos(userRegistered, request);
+            AuditHelper.UpdateAuditInfo(userRegistered, EntityState.Modified, GetName());
+            await _userRepository.UpdateAsync(userRegistered);
+        }
+
+        public UserUpdate GetUserByLogin()
+        {
+            User userRegistered = _userRepository.FindByLogin(GetLogin());
+
+            if (userRegistered is null)
+                throw new Exception("Usuário não localizado, contate o administrador do sistema");
+
+            return userRegistered.Adapt<UserUpdate>(_mapConfig);
+        }
+
+        private void SetUserInfos(User userRegistered, UserUpdate request)
+        {
+            if(!string.IsNullOrEmpty(request.Name))
+                userRegistered.Name = request.Name;
+
+            if (!string.IsNullOrEmpty(request.Email))
+                userRegistered.Email = request.Email;
+
+            if (!string.IsNullOrEmpty(request.PhoneNumber))
+                userRegistered.PhoneNumber = request.PhoneNumber;
+
+            if (!string.IsNullOrEmpty(request.Password))
+                userRegistered.Password = HashUtil.HashPassword(request.Password);
         }
     }
 }
