@@ -35,7 +35,7 @@ namespace FatecMauaJobNewsletter.Domains.Utils
 
         private static void ConfigureDatabaseConnectiton(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<DBContext>(x => x.UseSqlServer(configuration.GetConnectionString("Database")));
+            services.AddDbContext<DBContext>(x => x.UseMySQL(configuration.GetConnectionString("Database")));
         }
 
         private static void AddSwaggerGenInfo(IServiceCollection services)
